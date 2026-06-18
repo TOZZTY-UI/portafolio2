@@ -1,5 +1,6 @@
 ---
-
+import '../styles/global.css';
+import { Main } from '../components/background';
 ---
 
 <html lang="en">
@@ -9,9 +10,12 @@
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<meta name="description" content="Animated raining letters and scrambled text hero section using Astro, React, and Tailwind CSS." />
+		<title>Inicio</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="bg-black text-white overflow-hidden">
+		<main id="hero-section">
+			<Main client:load />
+		</main>
 	</body>
 </html>
