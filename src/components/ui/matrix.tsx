@@ -2,13 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback, useRef } from "react"
-
-interface Character {
-  char: string
-  x: number
-  y: number
-  speed: number
-}
+import Background from "./background"
 
 class TextScramble {
   el: HTMLElement
@@ -39,7 +33,7 @@ class TextScramble {
     const length = Math.max(oldText.length, newText.length)
     const promise = new Promise<void>((resolve) => this.resolve = resolve)
     this.queue = []
-    
+
     for (let i = 0; i < length; i++) {
       const from = oldText[i] || ''
       const to = newText[i] || ''
@@ -47,7 +41,7 @@ class TextScramble {
       const end = start + Math.floor(Math.random() * 40)
       this.queue.push({ from, to, start, end })
     }
-    
+
     cancelAnimationFrame(this.frameRequest)
     this.frame = 0
     this.update()
@@ -57,7 +51,7 @@ class TextScramble {
   update() {
     let output = ''
     let complete = 0
-    
+
     for (let i = 0, n = this.queue.length; i < n; i++) {
       let { from, to, start, end, char } = this.queue[i]
       if (this.frame >= end) {
@@ -73,7 +67,7 @@ class TextScramble {
         output += from
       }
     }
-    
+
     this.el.innerHTML = output
     if (complete === this.queue.length) {
       this.resolve()
@@ -108,7 +102,7 @@ const ScrambledTitle: React.FC<ScrambledTitleProps> = ({ onComplete }) => {
         'con pasión y código',
         '¿Preparados para trabajar en tus proyectos?'
       ]
-      
+
       let counter = 0
       const next = () => {
         if (scramblerRef.current) {
@@ -128,7 +122,7 @@ const ScrambledTitle: React.FC<ScrambledTitleProps> = ({ onComplete }) => {
   }, [mounted, onComplete])
 
   return (
-    <h1 
+    <h1
       ref={elementRef}
       className="text-white text-4xl md:text-6xl font-bold tracking-wider text-center"
       style={{ fontFamily: 'monospace' }}
@@ -138,85 +132,30 @@ const ScrambledTitle: React.FC<ScrambledTitleProps> = ({ onComplete }) => {
   )
 }
 
-const RainingLetters: React.FC = () => {
-  const [characters, setCharacters] = useState<Character[]>([])
-  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
+const ModernAnimatedHeroSection: React.FC = () => {
   const [showButton, setShowButton] = useState(false)
-
-  const createCharacters = useCallback(() => {
-    const allChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?"
-    const charCount = 300
-    const newCharacters: Character[] = []
-
-    for (let i = 0; i < charCount; i++) {
-      newCharacters.push({
-        char: allChars[Math.floor(Math.random() * allChars.length)],
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        speed: 0.1 + Math.random() * 0.3,
-      })
-    }
-
-    return newCharacters
-  }, [])
-
-  useEffect(() => {
-    setCharacters(createCharacters())
-  }, [createCharacters])
-
-  useEffect(() => {
-    const updateActiveIndices = () => {
-      const newActiveIndices = new Set<number>()
-      const numActive = Math.floor(Math.random() * 3) + 3
-      for (let i = 0; i < numActive; i++) {
-        newActiveIndices.add(Math.floor(Math.random() * characters.length))
-      }
-      setActiveIndices(newActiveIndices)
-    }
-
-    const flickerInterval = setInterval(updateActiveIndices, 50)
-    return () => clearInterval(flickerInterval)
-  }, [characters.length])
-
-  useEffect(() => {
-    let animationFrameId: number
-
-    const updatePositions = () => {
-      setCharacters(prevChars => 
-        prevChars.map(char => ({
-          ...char,
-          y: char.y + char.speed,
-          ...(char.y >= 100 && {
-            y: -5,
-            x: Math.random() * 100,
-            char: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?"[
-              Math.floor(Math.random() * "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?".length)
-            ],
-          }),
-        }))
-      )
-      animationFrameId = requestAnimationFrame(updatePositions)
-    }
-
-    animationFrameId = requestAnimationFrame(updatePositions)
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [])
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const handleTitleComplete = useCallback(() => {
     setShowButton(true)
   }, [])
 
+  const handleStart = useCallback(() => {
+    window.location.href = '/proyectos'
+  }, [])
+
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden flex flex-col items-center justify-center">
-      {/* Centered container for Title and Button */}
+    <Background className="flex flex-col items-center justify-center">
+      {/* Contenedor centrado para título y botón */}
       <div className="z-20 flex flex-col items-center gap-8 max-w-4xl px-4 text-center">
         <ScrambledTitle onComplete={handleTitleComplete} />
-        
-        {/* Animated Button */}
+
         <button
+          ref={buttonRef}
+          onClick={handleStart}
           className={`button transition-all duration-500 transform ${
-            showButton 
-              ? "opacity-100 translate-y-0 scale-100 cursor-pointer" 
+            showButton
+              ? "opacity-100 translate-y-0 scale-100 cursor-pointer"
               : "opacity-0 translate-y-4 scale-95 pointer-events-none"
           }`}
           data-text="comenzar"
@@ -225,34 +164,9 @@ const RainingLetters: React.FC = () => {
           <span aria-hidden="true" className="hover-text">&nbsp;comenzar&nbsp;</span>
         </button>
       </div>
-
-      {/* Raining Characters */}
-      {characters.map((char, index) => (
-        <span
-          key={index}
-          className={`absolute text-xs transition-colors duration-100 ${
-            activeIndices.has(index)
-              ? "text-[#00ff00] text-base scale-125 z-10 font-bold animate-pulse"
-              : "text-slate-600 font-light"
-          }`}
-          style={{
-            left: `${char.x}%`,
-            top: `${char.y}%`,
-            transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
-            textShadow: activeIndices.has(index) 
-              ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' 
-              : 'none',
-            opacity: activeIndices.has(index) ? 1 : 0.4,
-            transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
-            willChange: 'transform, top',
-            fontSize: '1.8rem'
-          }}
-        >
-          {char.char}
-        </span>
-      ))}
-    </div>
+    </Background>
   )
 }
 
-export default RainingLetters
+export default ModernAnimatedHeroSection
+export { ModernAnimatedHeroSection as Matrix }

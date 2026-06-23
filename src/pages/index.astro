@@ -1,21 +1,9 @@
 ---
-import '../styles/global.css';
-import { Main } from '../components/background';
+import Layout from '../layouts/Layout.astro';
+import { Matrix } from '../components/ui/matrix';
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="Animated raining letters and scrambled text hero section using Astro, React, and Tailwind CSS." />
-		<title>Inicio</title>
-	</head>
-	<body class="bg-black text-white overflow-hidden">
-		<main id="hero-section">
-			<Main client:load />
-		</main>
-	</body>
-</html>
+<Layout>
+	<main id="hero-section" class="bg-black text-white overflow-hidden">
+		<Matrix client:load />
+	</main>
+</Layout>

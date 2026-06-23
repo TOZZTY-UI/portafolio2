@@ -9,6 +9,6 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
   site: 'https://tozzty-ui.github.io',
-  base: '/portafolio2',
+  base: '/',
   integrations: [react()]
 });
